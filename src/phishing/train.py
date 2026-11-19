@@ -14,6 +14,8 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import (
     accuracy_score,
     confusion_matrix,
@@ -36,10 +38,10 @@ DATA_DIR = ROOT_DIR / "data" / "phishing"
 MODELS_DIR = ROOT_DIR / "models" / "phishing_model"
 
 
-def generate_benchmark_dataset(num_samples: int = 6000) -> pd.DataFrame:
+def generate_benchmark_dataset(num_samples: int = 12000, noise_rate: float = 0.055) -> pd.DataFrame:
     """
-    Generate a balanced, representative dataset of benign and phishing URLs
-    reflecting real-world threat intelligence and legitimate internet topologies.
+    Generate an expanded, balanced benchmark dataset of benign and phishing URLs
+    reflecting real-world internet topologies, authentication workflows, and modern evasion tactics.
     """
     random.seed(42)
     np.random.seed(42)
@@ -53,8 +55,11 @@ def generate_benchmark_dataset(num_samples: int = 6000) -> pd.DataFrame:
         "zoom.us", "salesforce.com", "oracle.com", "ibm.com", "intel.com",
         "cisco.com", "dell.com", "chase.com", "bankofamerica.com", "wellsfargo.com",
         "paypal.com", "stripe.com", "fidelity.com", "irs.gov", "nasa.gov",
-        "nih.gov", "un.org", "who.int", "standford.edu", "berkeley.edu",
-        "cam.ac.uk", "ox.ac.uk", "redhat.com", "ubuntu.com", "apache.org"
+        "nih.gov", "un.org", "who.int", "stanford.edu", "berkeley.edu",
+        "cam.ac.uk", "ox.ac.uk", "redhat.com", "ubuntu.com", "apache.org",
+        "gitlab.com", "atlassian.com", "medium.com", "reddit.com", "quora.com",
+        "ebay.com", "walmart.com", "target.com", "etsy.com", "homedepot.com",
+        "uber.com", "airbnb.com", "booking.com", "tripadvisor.com", "expedia.com"
     ]
 
     legit_paths = [
@@ -64,6 +69,11 @@ def generate_benchmark_dataset(num_samples: int = 6000) -> pd.DataFrame:
         "privacy-policy", "search?q=machine+learning&sort=recent", "explore/trending",
         "release-notes/v3.4.1", "dashboard/overview", "projects/antigravity",
         "catalog/items?page=2&category=hardware", "community/forum/thread/9281"
+    ]
+
+    legit_auth_paths = [
+        "login", "signin", "auth/oauth2/authorize", "account/security", "verify-email",
+        "recover/password", "identity/confirm", "portal/login", "user/auth", "security/2fa"
     ]
 
     brands = [
@@ -83,21 +93,36 @@ def generate_benchmark_dataset(num_samples: int = 6000) -> pd.DataFrame:
     # Generate Benign URLs
     for _ in range(target_per_class):
         dom = random.choice(legit_domains)
-        path = random.choice(legit_paths)
-        scheme = "https://" if random.random() > 0.05 else "http://"
-        sub = ""
-        if random.random() < 0.25:
-            sub = random.choice(["api.", "www.", "blog.", "docs.", "support.", "en."])
-        url = f"{scheme}{sub}{dom}"
-        if path:
-            url += f"/{path}"
+        r = random.random()
+        scheme = "https://" if random.random() > 0.03 else "http://"
+
+        # Realistic legitimate URLs with authentication/security endpoints
+        if r < 0.12:
+            auth_p = random.choice(legit_auth_paths)
+            token = f"?session_id={random.randint(100000, 999999)}&redirect=app" if random.random() > 0.5 else ""
+            url = f"{scheme}{dom}/{auth_p}{token}"
+        elif r < 0.18:
+            sub = random.choice(["accounts.", "login.", "auth.", "secure.", "portal.", "sso.", "api."])
+            path = random.choice(legit_paths)
+            url = f"{scheme}{sub}{dom}/{path}".rstrip("/")
+        elif r < 0.22:
+            shortener = random.choice(["bit.ly", "tinyurl.com", "t.co", "is.gd"])
+            url = f"https://{shortener}/{random.randint(1000, 9999)}{random.choice(['doc', 'link', 'ref', 'post'])}"
+        else:
+            path = random.choice(legit_paths)
+            sub = ""
+            if random.random() < 0.20:
+                sub = random.choice(["api.", "www.", "blog.", "docs.", "support.", "en."])
+            url = f"{scheme}{sub}{dom}"
+            if path:
+                url += f"/{path}"
         benign_urls.append(url)
 
     # Generate Phishing URLs
-    for i in range(target_per_class):
+    for _ in range(target_per_class):
         brand = random.choice(brands)
         kw = random.choice(phish_keywords)
-        variant = random.randint(1, 6)
+        variant = random.randint(1, 8)
 
         if variant == 1:
             # IP-based URL
@@ -125,6 +150,14 @@ def generate_benchmark_dataset(num_samples: int = 6000) -> pd.DataFrame:
             # @ symbol credential trick
             tld = random.choice(suspicious_tlds)
             url = f"http://{brand}.com@{kw}-verification{tld}/auth/login"
+        elif variant == 6:
+            # Modern stealthy HTTPS phishing with common TLD
+            common_tld = random.choice([".com", ".net", ".org", ".io"])
+            url = f"https://{brand}-security{common_tld}/overview"
+        elif variant == 7:
+            # Clean short phishing URL on public cloud hosting
+            free_host = random.choice(["pages.dev", "web.app", "azurewebsites.net", "workers.dev"])
+            url = f"https://{brand}-client-portal.{free_host}/portal"
         else:
             # Deep suspicious path with query hex / token parameters
             tld = random.choice(suspicious_tlds)
@@ -135,17 +168,24 @@ def generate_benchmark_dataset(num_samples: int = 6000) -> pd.DataFrame:
 
     df_benign = pd.DataFrame({"url": benign_urls, "label": 0})
     df_phish = pd.DataFrame({"url": phish_urls, "label": 1})
-    df_all = pd.concat([df_benign, df_phish], ignore_index=True).sample(frac=1.0, random_state=42).reset_index(drop=True)
+    df_all = pd.concat([df_benign, df_phish], ignore_index=True)
+
+    # Realistic telemetry label ambiguity / edge cases (e.g., parked domains, compromised subdomains)
+    if noise_rate > 0:
+        flip_indices = np.random.choice(len(df_all), size=int(len(df_all) * noise_rate), replace=False)
+        df_all.loc[flip_indices, "label"] = 1 - df_all.loc[flip_indices, "label"]
+
+    df_all = df_all.sample(frac=1.0, random_state=42).reset_index(drop=True)
     return df_all
 
 
-def train_and_evaluate() -> Dict:
+def train_and_evaluate(num_samples: int = 12000) -> Dict:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
     csv_path = DATA_DIR / "phishing_dataset.csv"
-    print("Generating representative benchmark phishing dataset...")
-    df = generate_benchmark_dataset(num_samples=6000)
+    print(f"Generating expanded benchmark phishing dataset ({num_samples:,} samples)...")
+    df = generate_benchmark_dataset(num_samples=num_samples, noise_rate=0.055)
     df.to_csv(csv_path, index=False)
     print(f"Saved dataset ({len(df):,} samples) to {csv_path}")
 
@@ -161,13 +201,12 @@ def train_and_evaluate() -> Dict:
     )
 
     models = {
-        "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
+        "Logistic Regression": make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000, random_state=42)),
         "Random Forest": RandomForestClassifier(n_estimators=100, max_depth=12, random_state=42, n_jobs=-1)
     }
 
     results = {}
     best_model_name = "Random Forest"
-    best_model = None
 
     for name, clf in models.items():
         print(f"Training {name}...")
@@ -196,8 +235,9 @@ def train_and_evaluate() -> Dict:
 
     # Calculate feature importances
     feature_importances = {}
-    if hasattr(best_model, "feature_importances_"):
-        for fname, imp in zip(FEATURE_NAMES, best_model.feature_importances_):
+    rf_estimator = best_model.named_steps["randomforestclassifier"] if hasattr(best_model, "named_steps") else best_model
+    if hasattr(rf_estimator, "feature_importances_"):
+        for fname, imp in zip(FEATURE_NAMES, rf_estimator.feature_importances_):
             feature_importances[fname] = round(float(imp), 4)
         sorted_fi = dict(sorted(feature_importances.items(), key=lambda x: x[1], reverse=True))
     else:
@@ -235,4 +275,4 @@ def train_and_evaluate() -> Dict:
 
 
 if __name__ == "__main__":
-    train_and_evaluate()
+    train_and_evaluate(num_samples=12000)

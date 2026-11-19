@@ -1,9 +1,9 @@
 {
   "dataset": {
     "source": "Curated Cybersecurity & Phishing Threat Intelligence Benchmark",
-    "total_records": 6000,
-    "training_samples": 4800,
-    "testing_samples": 1200,
+    "total_records": 12000,
+    "training_samples": 9600,
+    "testing_samples": 2400,
     "test_split_ratio": 0.2,
     "classes": {
       "0": "Benign",
@@ -34,60 +34,60 @@
     "entropy"
   ],
   "feature_importances": {
-    "suspicious_keyword_count": 0.2428,
-    "is_https": 0.1732,
-    "domain_length": 0.1416,
-    "url_length": 0.1133,
-    "entropy": 0.051,
-    "num_digits": 0.0468,
-    "num_hyphens": 0.0412,
-    "digit_ratio": 0.0343,
-    "query_length": 0.0335,
-    "is_shortened": 0.0239,
-    "num_subdomains": 0.015,
-    "path_length": 0.0143,
-    "num_equals": 0.014,
-    "num_questionmarks": 0.0136,
-    "num_dots": 0.0126,
-    "num_at": 0.0119,
-    "num_slashes": 0.0085,
-    "has_punycode": 0.0052,
-    "is_ip": 0.0033,
-    "num_underscores": 0.0,
+    "domain_length": 0.2577,
+    "suspicious_keyword_count": 0.123,
+    "is_https": 0.1111,
+    "num_hyphens": 0.089,
+    "path_length": 0.0798,
+    "url_length": 0.0764,
+    "entropy": 0.067,
+    "num_digits": 0.0336,
+    "num_slashes": 0.028,
+    "digit_ratio": 0.0278,
+    "query_length": 0.0214,
+    "num_dots": 0.02,
+    "num_subdomains": 0.0187,
+    "num_equals": 0.011,
+    "is_shortened": 0.0108,
+    "is_ip": 0.0092,
+    "num_questionmarks": 0.0054,
+    "num_underscores": 0.0045,
+    "num_at": 0.0042,
+    "has_punycode": 0.0014,
     "has_port": 0.0
   },
   "model_comparison": {
     "Logistic Regression": {
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1_score": 1.0,
-      "roc_auc": 1.0,
+      "accuracy": 0.9392,
+      "precision": 0.9449,
+      "recall": 0.9339,
+      "f1_score": 0.9394,
+      "roc_auc": 0.947,
       "confusion_matrix": [
         [
-          600,
-          0
+          1123,
+          66
         ],
         [
-          0,
-          600
+          80,
+          1131
         ]
       ]
     },
     "Random Forest": {
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1_score": 1.0,
-      "roc_auc": 1.0,
+      "accuracy": 0.9446,
+      "precision": 0.956,
+      "recall": 0.9331,
+      "f1_score": 0.9444,
+      "roc_auc": 0.938,
       "confusion_matrix": [
         [
-          600,
-          0
+          1137,
+          52
         ],
         [
-          0,
-          600
+          81,
+          1130
         ]
       ]
     }
@@ -96,19 +96,19 @@
     "algorithm": "Random Forest",
     "file": "phishing_detector.pkl",
     "metrics": {
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1_score": 1.0,
-      "roc_auc": 1.0,
+      "accuracy": 0.9446,
+      "precision": 0.956,
+      "recall": 0.9331,
+      "f1_score": 0.9444,
+      "roc_auc": 0.938,
       "confusion_matrix": [
         [
-          600,
-          0
+          1137,
+          52
         ],
         [
-          0,
-          600
+          81,
+          1130
         ]
       ]
     }

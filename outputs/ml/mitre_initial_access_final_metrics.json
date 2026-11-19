@@ -1,0 +1,123 @@
+{
+    "target": "mitre_initial_access",
+    "best_model": "Linear SVM",
+    "training_records_before_final_refit": 392,
+    "holdout_records": 99,
+    "final_model_training_records": 491,
+    "classes": [
+        "Drive-By Compromise",
+        "Exploit Public-Facing Application",
+        "External Remote Services",
+        "Phishing",
+        "Supply Chain Compromise",
+        "Trusted Relationship",
+        "Valid Accounts"
+    ],
+    "class_distribution": {
+        "Phishing": 179,
+        "Exploit Public-Facing Application": 176,
+        "Valid Accounts": 55,
+        "Drive-By Compromise": 30,
+        "External Remote Services": 25,
+        "Trusted Relationship": 13,
+        "Supply Chain Compromise": 13
+    },
+    "excluded_rare_classes": {
+        "Replication Through Removable Media": 9,
+        "Hardware Additions": 6
+    },
+    "model_comparison": [
+        {
+            "model": "Linear SVM",
+            "cv_macro_f1": 0.3465537845713829,
+            "best_parameters": {
+                "classifier__C": 0.1
+            }
+        },
+        {
+            "model": "Logistic Regression",
+            "cv_macro_f1": 0.3450693911558126,
+            "best_parameters": {
+                "classifier__C": 0.5
+            }
+        },
+        {
+            "model": "Complement Naive Bayes",
+            "cv_macro_f1": 0.28811674709547785,
+            "best_parameters": {
+                "classifier__alpha": 0.1
+            }
+        }
+    ],
+    "best_parameters": {
+        "classifier__C": 0.1
+    },
+    "holdout_metrics": {
+        "accuracy": 0.5555555555555556,
+        "macro_precision": 0.32301624527234285,
+        "macro_recall": 0.36527520098948674,
+        "macro_f1": 0.33514790560630964,
+        "weighted_precision": 0.5690460736192443,
+        "weighted_recall": 0.5555555555555556,
+        "weighted_f1": 0.551176101072347
+    },
+    "classification_report": {
+        "Drive-By Compromise": {
+            "precision": 0.5555555555555556,
+            "recall": 0.8333333333333334,
+            "f1-score": 0.6666666666666666,
+            "support": 6.0
+        },
+        "Exploit Public-Facing Application": {
+            "precision": 0.5853658536585366,
+            "recall": 0.6857142857142857,
+            "f1-score": 0.631578947368421,
+            "support": 35.0
+        },
+        "External Remote Services": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 5.0
+        },
+        "Phishing": {
+            "precision": 0.8076923076923077,
+            "recall": 0.5833333333333334,
+            "f1-score": 0.6774193548387096,
+            "support": 36.0
+        },
+        "Supply Chain Compromise": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 3.0
+        },
+        "Trusted Relationship": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1-score": 0.0,
+            "support": 3.0
+        },
+        "Valid Accounts": {
+            "precision": 0.3125,
+            "recall": 0.45454545454545453,
+            "f1-score": 0.37037037037037035,
+            "support": 11.0
+        },
+        "accuracy": 0.5555555555555556,
+        "macro avg": {
+            "precision": 0.32301624527234285,
+            "recall": 0.36527520098948674,
+            "f1-score": 0.33514790560630964,
+            "support": 99.0
+        },
+        "weighted avg": {
+            "precision": 0.5690460736192443,
+            "recall": 0.5555555555555556,
+            "f1-score": 0.551176101072347,
+            "support": 99.0
+        }
+    },
+    "confusion_matrix_path": "/Users/megha/Downloads/security_data_visualization/outputs/ml/mitre_initial_access_final_confusion_matrix.png",
+    "final_model_path": "/Users/megha/Downloads/security_data_visualization/models/mitre_initial_access_final_model.joblib"
+}

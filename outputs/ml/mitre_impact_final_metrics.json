@@ -1,0 +1,129 @@
+{
+    "target": "mitre_impact",
+    "best_model": "Linear SVM",
+    "total_dataset_records": 3414,
+    "unknown_target_records": 1963,
+    "training_records_before_final_refit": 1139,
+    "holdout_records": 285,
+    "final_model_training_records": 1424,
+    "classes": [
+        "Account Access Removal",
+        "Data Destruction",
+        "Data Encrypted for Impact",
+        "Data Exfiltration",
+        "Data Manipulation",
+        "Defacement",
+        "Network Denial of Service"
+    ],
+    "class_distribution": {
+        "Data Exfiltration": 837,
+        "Network Denial of Service": 224,
+        "Data Encrypted for Impact": 189,
+        "Defacement": 74,
+        "Data Manipulation": 37,
+        "Data Destruction": 35,
+        "Account Access Removal": 28
+    },
+    "excluded_rare_classes": {
+        "Disk Wipe": 9,
+        "Service Stop": 6,
+        "Endpoint Denial of Service": 6,
+        "Firmware Corruption": 2,
+        "Resource Hijacking": 2,
+        "System Shutdown/Reboot": 2
+    },
+    "model_comparison": [
+        {
+            "model": "Linear SVM",
+            "cv_macro_f1": 0.7530762452483335,
+            "best_parameters": {
+                "classifier__C": 0.5
+            }
+        },
+        {
+            "model": "Logistic Regression",
+            "cv_macro_f1": 0.727523057838967,
+            "best_parameters": {
+                "classifier__C": 10.0
+            }
+        },
+        {
+            "model": "Complement Naive Bayes",
+            "cv_macro_f1": 0.5345635675492907,
+            "best_parameters": {
+                "classifier__alpha": 0.1
+            }
+        }
+    ],
+    "best_parameters": {
+        "classifier__C": 0.5
+    },
+    "holdout_metrics": {
+        "accuracy": 0.9122807017543859,
+        "macro_precision": 0.7832470426594282,
+        "macro_recall": 0.6270437999761308,
+        "macro_f1": 0.6630608327588424,
+        "weighted_precision": 0.9030050495697372,
+        "weighted_recall": 0.9122807017543859,
+        "weighted_f1": 0.8999952715120868
+    },
+    "classification_report": {
+        "Account Access Removal": {
+            "precision": 0.5,
+            "recall": 0.16666666666666666,
+            "f1-score": 0.25,
+            "support": 6.0
+        },
+        "Data Destruction": {
+            "precision": 0.6666666666666666,
+            "recall": 0.5714285714285714,
+            "f1-score": 0.6153846153846154,
+            "support": 7.0
+        },
+        "Data Encrypted for Impact": {
+            "precision": 0.875,
+            "recall": 0.9210526315789473,
+            "f1-score": 0.8974358974358975,
+            "support": 38.0
+        },
+        "Data Exfiltration": {
+            "precision": 0.9597701149425287,
+            "recall": 1.0,
+            "f1-score": 0.9794721407624634,
+            "support": 167.0
+        },
+        "Data Manipulation": {
+            "precision": 1.0,
+            "recall": 0.2857142857142857,
+            "f1-score": 0.4444444444444444,
+            "support": 7.0
+        },
+        "Defacement": {
+            "precision": 0.5833333333333334,
+            "recall": 0.4666666666666667,
+            "f1-score": 0.5185185185185185,
+            "support": 15.0
+        },
+        "Network Denial of Service": {
+            "precision": 0.8979591836734694,
+            "recall": 0.9777777777777777,
+            "f1-score": 0.9361702127659575,
+            "support": 45.0
+        },
+        "accuracy": 0.9122807017543859,
+        "macro avg": {
+            "precision": 0.7832470426594282,
+            "recall": 0.6270437999761308,
+            "f1-score": 0.6630608327588424,
+            "support": 285.0
+        },
+        "weighted avg": {
+            "precision": 0.9030050495697372,
+            "recall": 0.9122807017543859,
+            "f1-score": 0.8999952715120868,
+            "support": 285.0
+        }
+    },
+    "confusion_matrix_path": "/Users/megha/Downloads/security_data_visualization/outputs/ml/mitre_impact_final_confusion_matrix.png",
+    "final_model_path": "/Users/megha/Downloads/security_data_visualization/models/mitre_impact_final_model.joblib"
+}

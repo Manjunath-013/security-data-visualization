@@ -83,6 +83,28 @@ def generate_simulated_packets(scenario: str = "normal", count: int = 25) -> Lis
             )
             events.append(ev)
 
+    elif scenario_clean in ["burst", "traffic_burst", "heavy_traffic"]:
+        # High volume traffic burst / heavy file download
+        server_ip = "151.101.1.140"
+        client_ip = "192.168.1.45"
+        for i in range(count):
+            p_time = now - (count - i) * 0.015
+            ev = PacketEvent(
+                timestamp=p_time,
+                time_str=datetime.fromtimestamp(p_time).strftime("%H:%M:%S"),
+                src_ip=server_ip,
+                dst_ip=client_ip,
+                src_port=443,
+                dst_port=52340,
+                protocol="HTTPS",
+                length=random.randint(1420, 1514),
+                tcp_flags="PSH ACK",
+                info=f"High-Volume Download Segment ({i+1}/{count})",
+                source_type="Simulated Traffic",
+                is_outbound=False
+            )
+            events.append(ev)
+
     elif scenario_clean == "dns_anomaly":
         # DNS Tunneling / Query Flood with randomized encoded subdomains
         src_host = "192.168.1.150"
