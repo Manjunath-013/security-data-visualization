@@ -1,3 +1,14 @@
+---
+title: CyberShield - Cybersecurity Threat Intelligence & Network Analytics
+emoji: 🛡️
+colorFrom: blue
+colorTo: red
+sdk: streamlit
+sdk_version: 1.40.2
+app_file: app.py
+pinned: false
+---
+
 # 🛡️ CyberShield: Cybersecurity Threat Intelligence & Network Analytics Platform
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
