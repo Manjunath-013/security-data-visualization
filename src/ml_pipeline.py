@@ -413,14 +413,22 @@ def train_impact_model(df):
 # 7. PREDICTION: MITRE IMPACT ONLY
 # ----------------------------------------------------------------
 
+_CACHED_BUNDLE = None
+
+def get_model_bundle():
+    """Load and cache the trained model bundle in memory."""
+    global _CACHED_BUNDLE
+    if _CACHED_BUNDLE is None:
+        if not MODEL_PATH.exists():
+            raise FileNotFoundError(
+                f"Model not found: {MODEL_PATH}. Run training first."
+            )
+        _CACHED_BUNDLE = joblib.load(MODEL_PATH)
+    return _CACHED_BUNDLE
+
 def predict_new_incident(incident):
     """Predict one MITRE Impact label using the saved model bundle."""
-    if not MODEL_PATH.exists():
-        raise FileNotFoundError(
-            f"Model not found: {MODEL_PATH}. Run training first."
-        )
-
-    bundle = joblib.load(MODEL_PATH)
+    bundle = get_model_bundle()
     pipeline = bundle["pipeline"]
     input_df = prepare_features(pd.DataFrame([incident]))
     prediction = str(pipeline.predict(input_df)[0])
